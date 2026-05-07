@@ -55,13 +55,13 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
        - Pertemuan 15-18: Tahap Refleksi & Tindak Lanjut (Evaluasi & Aksi Mandiri).
 
        Format Penulisan (WAJIB):
-       - Gunakan heading level 3 (###) untuk setiap judul pertemuan.
+       - Gunakan heading level 3 (###) untuk setiap judul pertemuan dengan format: ### Pertemuan [X] - [Judul Kegiatan] - 3 JP
        - Gunakan garis pemisah horizontal (---) di AKHIR setiap pertemuan.
-       - Struktur per pertemuan:
-         1. **Pendahuluan**: Orientasi tema & apersepsi Panca Cinta.
-         2. **Inti**: Aktivitas konkret PjBL/metode aktif lainnya.
-         3. **Penutup**: Refleksi karakter & penguatan adab.
-       - Berikan narasi yang sangat operasional (apa yang dilakukan guru dan murid).
+       - Struktur per pertemuan (Gunakan daftar bernomor):
+         1. **Pendahuluan**: Uraian kegiatan awal pembelajaran yang jelas dan terarah (orientasi tema & apersepsi Panca Cinta).
+         2. **Inti**: Uraian kegiatan inti pembelajaran yang jelas dan sistematis (aktivitas konkret PjBL/metode aktif lainnya).
+         3. **Penutup**: Uraian kegiatan akhir pembelajaran pada pertemuan tersebut (refleksi karakter & penguatan adab).
+       - Berikan narasi yang sangat operasional dan detail (apa yang dilakukan guru dan murid).
     9. lkpd_ai: Contoh Lembar Kerja Peserta Didik (LKPD) yang menarik dan relevan untuk semua pertemuan (atau perwakilan pertemuan utama) dalam format Markdown.
 
     Gunakan bahasa yang edukatif, Islami (Panca Cinta), dan sesuai dengan psikologi anak ${data.fase_kelas}.

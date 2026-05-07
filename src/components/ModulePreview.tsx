@@ -275,27 +275,31 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
                       const text = String(props.children);
                       if (text.toLowerCase().includes('pertemuan')) {
                         return (
-                          <div className="flex items-center gap-3 mt-6 mb-3 bg-primary-50 dark:bg-primary-900/20 p-2 rounded-lg border-l-4 border-primary-600">
+                          <div className="flex items-center gap-3 mt-8 mb-4 bg-primary-100/50 dark:bg-primary-900/30 p-3 rounded-lg border-l-4 border-primary-600 shadow-sm print:shadow-none print:bg-gray-100 print:border-black">
                              <div className="flex-1">
-                               <h3 className="text-primary-800 dark:text-primary-300 font-bold uppercase tracking-wider text-xs" {...props} />
+                               <h3 className="text-primary-900 dark:text-primary-200 font-bold uppercase tracking-wider text-sm" {...props} />
                              </div>
                           </div>
                         );
                       }
-                      return <h3 className="font-bold mt-4 mb-2" {...props} />;
+                      return <h3 className="font-bold mt-6 mb-3 text-base text-gray-800 dark:text-gray-200" {...props} />;
                     },
-                    hr: () => <hr className="my-8 border-t-2 border-dashed border-gray-200 dark:border-neutral-800" />,
-                    ul: ({node, ...props}) => <ul className="list-disc pl-5 space-y-2 mb-4" {...props} />,
-                    li: ({node, ...props}) => <li className="text-gray-700 dark:text-gray-300 leading-relaxed" {...props} />
+                    hr: () => <hr className="my-10 border-t-2 border-dashed border-primary-200 dark:border-neutral-800 print:border-gray-300" />,
+                    ul: ({node, ...props}) => <ul className="list-disc pl-6 space-y-2 mb-6" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal pl-6 space-y-3 mb-6" {...props} />,
+                    li: ({node, ...props}) => <li className="text-gray-700 dark:text-gray-300 leading-relaxed" {...props} />,
+                    strong: ({node, ...props}) => <strong className="text-primary-700 dark:text-primary-400 font-semibold" {...props} />
                   }}
                 >
                   {(() => {
                     if (!data.kegiatan_18_pertemuan_ai) return "*Generate AI untuk melihat rencana detail 18 pertemuan.*";
                     let count = 1;
-                    // Fix sequential numbering and add separators
+                    // Fix sequential numbering and ensure separators
                     const fixedText = data.kegiatan_18_pertemuan_ai
-                      .replace(/### Pertemuan\s*\d+/gi, () => `### Pertemuan ${count++}`)
-                      .replace(/### Pertemuan/g, '---\n### Pertemuan');
+                      .replace(/^---\n/gm, '') // Remove existing separators to prevent duplicates
+                      .replace(/### Pertemuan\s*\d*/gi, () => `### Pertemuan ${count++}`)
+                      .replace(/### Pertemuan/g, '---\n### Pertemuan')
+                      .replace(/^---\n/, ''); // Remove the very first separator if it's at the top
                     return fixedText;
                   })()}
                 </ReactMarkdown>
