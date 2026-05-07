@@ -10,10 +10,27 @@ import { IdentityForm } from './components/IdentityForm';
 import { LoginPage } from './components/LoginPage';
 import { ThemeSettingsComponent } from './components/ThemeSettings';
 import { ModuleData, ThemeSettings } from './types';
-import { Printer, Heart, Save, ArrowLeft, Layout, FileText, Download, Loader2, CheckCircle, LogOut, Palette, X } from 'lucide-react';
+import { Printer, Heart, Save, ArrowLeft, Layout, FileText, Download, Loader2, CheckCircle, LogOut, Palette, X, GripVertical } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { motion, AnimatePresence } from 'motion/react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const getDefaultData = (): ModuleData => {
   const now = new Date();
@@ -64,6 +81,82 @@ const getDefaultData = (): ModuleData => {
   };
 };
 
+const SortableSectionItem = ({ 
+  section, 
+  idx, 
+  pdfSectionsLength, 
+  togglePdfSection, 
+  moveSection 
+}: {
+  section: { id: string; label: string; enabled: boolean };
+  idx: number;
+  pdfSectionsLength: number;
+  togglePdfSection: (id: string) => void;
+  moveSection: (index: number, direction: 'up' | 'down') => void;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: section.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 'auto',
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style}
+      className={`flex items-center justify-between gap-1 hover:bg-white/5 p-1 rounded transition-colors group ${isDragging ? 'bg-white/10 shadow-lg' : ''}`}
+    >
+      <div className="flex items-center gap-1 flex-1">
+        <button 
+          {...attributes} 
+          {...listeners}
+          className="p-1 hover:bg-white/10 rounded cursor-grab active:cursor-grabbing text-primary-400 opacity-60 hover:opacity-100 transition-opacity"
+          type="button"
+        >
+          <GripVertical size={12} />
+        </button>
+        <label className="flex items-center gap-2 text-[10px] cursor-pointer flex-1">
+          <input 
+            type="checkbox" 
+            checked={section.enabled}
+            onChange={() => togglePdfSection(section.id)}
+            className="w-3 h-3 rounded border-gray-400 text-teal-600 focus:ring-teal-500"
+          />
+          <span className={section.enabled ? 'text-white font-medium' : 'text-gray-500'}>
+            {section.label}
+          </span>
+        </label>
+      </div>
+      <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button 
+          onClick={() => moveSection(idx, 'up')}
+          disabled={idx === 0}
+          className="p-0.5 hover:bg-white/10 rounded text-gray-400 disabled:opacity-20"
+        >
+          <ArrowLeft size={10} className="rotate-90" />
+        </button>
+        <button 
+          onClick={() => moveSection(idx, 'down')}
+          disabled={idx === pdfSectionsLength - 1}
+          className="p-0.5 hover:bg-white/10 rounded text-gray-400 disabled:opacity-20"
+        >
+          <ArrowLeft size={10} className="-rotate-90" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   // 1. ALL HOOKS MUST COEXIST AT THE TOP
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -106,6 +199,26 @@ export default function App() {
   const [showPdfOptions, setShowPdfOptions] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [notification, setNotification] = useState<{ message: string; show: boolean }>({ message: '', show: false });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setPdfSections((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
 
   const [data, setData] = useState<ModuleData>(() => {
     const saved = localStorage.getItem('kbc_module_data');
@@ -577,37 +690,27 @@ export default function App() {
                     </div>
 
                     <p className="text-[9px] text-gray-500 uppercase tracking-widest px-1 mb-1">Urutan Bagian:</p>
-                    {pdfSections.map((section, idx) => (
-                      <div key={section.id} className="flex items-center justify-between gap-1 hover:bg-white/5 p-1 rounded transition-colors group">
-                        <label className="flex items-center gap-2 text-[10px] cursor-pointer flex-1">
-                          <input 
-                            type="checkbox" 
-                            checked={section.enabled}
-                            onChange={() => togglePdfSection(section.id)}
-                            className="w-3 h-3 rounded border-gray-400 text-teal-600 focus:ring-teal-500"
+                    <DndContext 
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext 
+                        items={pdfSections.map(s => s.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {pdfSections.map((section, idx) => (
+                          <SortableSectionItem 
+                            key={section.id}
+                            section={section}
+                            idx={idx}
+                            pdfSectionsLength={pdfSections.length}
+                            togglePdfSection={togglePdfSection}
+                            moveSection={moveSection}
                           />
-                          <span className={section.enabled ? 'text-white font-medium' : 'text-gray-500'}>
-                            {section.label}
-                          </span>
-                        </label>
-                        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            onClick={() => moveSection(idx, 'up')}
-                            disabled={idx === 0}
-                            className="p-0.5 hover:bg-white/10 rounded text-gray-400 disabled:opacity-20"
-                          >
-                            <ArrowLeft size={10} className="rotate-90" />
-                          </button>
-                          <button 
-                            onClick={() => moveSection(idx, 'down')}
-                            disabled={idx === pdfSections.length - 1}
-                            className="p-0.5 hover:bg-white/10 rounded text-gray-400 disabled:opacity-20"
-                          >
-                            <ArrowLeft size={10} className="-rotate-90" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                        ))}
+                      </SortableContext>
+                    </DndContext>
                   </motion.div>
                 )}
               </AnimatePresence>

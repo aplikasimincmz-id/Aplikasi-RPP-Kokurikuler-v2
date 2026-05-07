@@ -376,6 +376,36 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
         </select>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-y border-gray-100 dark:border-neutral-800 py-4">
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Langkah Tahap 1 (Pengenalan)</label>
+          <textarea 
+            name="langkah_tahap_1" value={data.langkah_tahap_1 || ''} onChange={handleChange}
+            rows={3}
+            placeholder="Eksplorasi awal, pengenalan konsep..."
+            className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Langkah Tahap 2 (Kontekstualisasi)</label>
+          <textarea 
+            name="langkah_tahap_2" value={data.langkah_tahap_2 || ''} onChange={handleChange}
+            rows={3}
+            placeholder="Menghubungkan dengan lingkungan..."
+            className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Langkah Tahap 3 (Aksi)</label>
+          <textarea 
+            name="langkah_tahap_3" value={data.langkah_tahap_3 || ''} onChange={handleChange}
+            rows={3}
+            placeholder="Praktik nyata, pembuatan produk..."
+            className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+          />
+        </div>
+      </div>
+
       {data.kegiatan_18_pertemuan_ai !== undefined && (
         <div className="border-t border-gray-200 dark:border-neutral-800 pt-4 space-y-4">
           <h3 className="text-sm font-bold text-purple-700 dark:text-purple-400 flex items-center gap-2">

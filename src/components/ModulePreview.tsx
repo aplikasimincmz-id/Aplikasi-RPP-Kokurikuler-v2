@@ -75,7 +75,8 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
     const userObjectives = data.tujuan.split(/[;\n]/).map(o => o.trim()).filter(o => o.length > 5);
     
     // If only one objective, augment it contextually
-    const objectives = userObjectives.length > 0 ? [...userObjectives] : [data.tujuan];
+    const rawObjectives = userObjectives.length > 0 ? [...userObjectives] : [data.tujuan];
+    const objectives = rawObjectives.map(obj => obj.replace(/^(\d+[\.\)\s]+)+/, '').trim());
     
     if (objectives.length === 1) {
       // Add an objective related to Nilai Panca Cinta (KBC) if applicable
@@ -94,6 +95,27 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
     }
 
     return objectives;
+  };
+
+  const letteredSectionIds = [
+    'dimensiProfil', 'kbcSection', 'tujuanBesar', 'praktekPedagogis', 
+    'lingkunganBelajar', 'kemitraanBelajar', 'mapelTerkait', 'pemanfaatanDigital', 
+    'kegiatan18', 'asesmenSection', 'catatanAktivitas', 'rubrikPenilaian',
+    'daftarPustaka', 'referensi', 'jurnalRefleksi'
+  ];
+
+  const getSectionLetterIndex = (id: string): number => {
+    const currentSections = pdfSections 
+      ? pdfSections.filter(s => s.enabled).map(s => s.id)
+      : [
+          'informasiUmum', 'dimensiProfil', 'kbcSection', 'tujuanBesar', 
+          'praktekPedagogis', 'lingkunganBelajar', 'kemitraanBelajar', 'mapelTerkait',
+          'pemanfaatanDigital', 'kegiatan18', 'asesmenSection', 'catatanAktivitas',
+          'rubrikPenilaian', 'pengesahan', 'lkpdAppendix', 'glosarium', 'daftarPustaka', 'referensi', 'jurnalRefleksi'
+        ];
+    
+    const letteredEnabled = currentSections.filter(sid => letteredSectionIds.includes(sid));
+    return letteredEnabled.indexOf(id);
   };
 
   const integrationText = getIntegrationNarrative();
@@ -136,7 +158,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'dimensiProfil':
         return (
           <section key={id} id="section-A" className="mb-4">
-            {getSectionHeader(0, "Dimensi Profil Lulusan")}
+            {getSectionHeader(getSectionLetterIndex(id), "Dimensi Profil Lulusan")}
             <div className="pl-4 text-sm">
               <p className="text-gray-700 dark:text-gray-300 font-medium">{data.dimensi || "-"}</p>
             </div>
@@ -146,7 +168,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'kbcSection':
         return (
           <section key={id} id="section-B" className="mb-4">
-            {getSectionHeader(1, "Kurikulum Berbasis Cinta (KBC)")}
+            {getSectionHeader(getSectionLetterIndex(id), "Kurikulum Berbasis Cinta (KBC)")}
             <div className="pl-4 text-sm italic text-primary-800 dark:text-primary-400">
               {data.topik || "-"}
             </div>
@@ -156,7 +178,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'tujuanBesar':
         return (
           <section key={id} id="section-C" className="mb-4">
-            {getSectionHeader(2, "Tujuan Pembelajaran")}
+            {getSectionHeader(getSectionLetterIndex(id), "Tujuan Pembelajaran")}
             <div className="pl-4 text-sm">
               <ul className="list-decimal pl-5 space-y-1">
                 {learningObjectives.map((tp, i) => (
@@ -170,7 +192,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'praktekPedagogis':
         return (
           <section key={id} id="section-D" className="mb-4">
-            {getSectionHeader(3, "Praktek Pedagogis")}
+            {getSectionHeader(getSectionLetterIndex(id), "Praktek Pedagogis")}
             <div className="pl-4 text-sm space-y-2">
               <p>• <strong>Model Pembelajaran:</strong> {pedagogisDesc[data.praktik_pedagogis || 'PjBL']}</p>
               <div className="mt-2">
@@ -188,7 +210,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'lingkunganBelajar':
         return (
           <section key={id} id="section-E" className="mb-4">
-            {getSectionHeader(4, "Lingkungan Pembelajaran")}
+            {getSectionHeader(getSectionLetterIndex(id), "Lingkungan Pembelajaran")}
             <div className="pl-4 text-sm text-justify leading-relaxed markdown-content">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {data.lingkungan_belajar_ai || "• Lingkungan madrasah sebagai area eksplorasi utama.\n• Lingkungan rumah sebagai tempat praktik pembiasaan mandiri."}
@@ -200,7 +222,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'kemitraanBelajar':
         return (
           <section key={id} id="section-F" className="mb-4">
-            {getSectionHeader(5, "Kemitraan Pembelajaran")}
+            {getSectionHeader(getSectionLetterIndex(id), "Kemitraan Pembelajaran")}
             <div className="pl-4 text-sm space-y-3">
               <div>
                 <p className="font-bold text-xs uppercase text-gray-500 mb-1">1. Satuan Pendidikan:</p>
@@ -221,7 +243,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'mapelTerkait':
         return (
           <section key={id} id="section-G" className="mb-4">
-            {getSectionHeader(6, "Mata Pelajaran yang Terkait")}
+            {getSectionHeader(getSectionLetterIndex(id), "Mata Pelajaran yang Terkait")}
             <div className="pl-4 text-sm font-medium text-gray-700 dark:text-gray-300">
               {data.mata_pelajaran_terkait || "-"}
             </div>
@@ -231,7 +253,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'pemanfaatanDigital':
         return (
           <section key={id} id="section-H" className="mb-4">
-            {getSectionHeader(7, "Pemanfaatan Digital")}
+            {getSectionHeader(getSectionLetterIndex(id), "Pemanfaatan Digital")}
             <div className="pl-4 text-sm text-justify leading-relaxed italic">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {data.digital_ai || "Penggunaan aplikasi kamera untuk dokumentasi pertumbuhan tanaman dan video tutorial."}
@@ -243,7 +265,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'kegiatan18':
         return (
           <section key={id} id="section-I" className="mb-6 page-break-before">
-            {getSectionHeader(8, "Kegiatan (18 Pertemuan)")}
+            {getSectionHeader(getSectionLetterIndex(id), "Kegiatan (18 Pertemuan)")}
             <div className="pl-4 mt-2 text-sm">
               <div className="markdown-content bg-gray-50 dark:bg-neutral-800/30 p-4 rounded border border-gray-100 dark:border-neutral-800">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -257,7 +279,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'asesmenSection':
         return (
           <section key={id} id="section-J" className="mb-4">
-            {getSectionHeader(9, "Asesmen")}
+            {getSectionHeader(getSectionLetterIndex(id), "Asesmen")}
             <div className="pl-4 text-sm text-justify leading-relaxed markdown-content">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {data.asesmen_ai || "• LKPD (Lembar Kerja Peserta Didik): Terlampir\n• Observasi: Lembar ceklis perilaku mandiri."}
@@ -269,7 +291,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'catatanAktivitas':
         return (
           <section key={id} id="section-K" className="mb-10 page-break-before">
-            {getSectionHeader(10, "Catatan Hasil Aktivitas")}
+            {getSectionHeader(getSectionLetterIndex(id), "Catatan Hasil Aktivitas")}
             <div className="pl-4">
               <table className="w-full border-2 border-black text-xs">
                 <tbody>
@@ -294,7 +316,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'rubrikPenilaian':
         return (
           <section key={id} id="section-L" className="mb-6 page-break-before">
-            {getSectionHeader(11, "Rubrik Penilaian")}
+            {getSectionHeader(getSectionLetterIndex(id), "Rubrik Penilaian")}
             <div className="pl-4 text-sm overflow-x-auto overflow-hidden">
               <div className="markdown-content">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -334,7 +356,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'daftarPustaka':
         return (
           <section key={id} id="section-10" className="mb-6">
-            {getSectionHeader(9, "DAFTAR PUSTAKA")}
+            {getSectionHeader(getSectionLetterIndex(id), "DAFTAR PUSTAKA")}
             <div className="pl-4 text-sm text-gray-700 dark:text-neutral-300">
               <p>1. Panduan Implementasi Kurikulum Merdeka di Madrasah - Kemenag RI.</p>
               <p>2. Pedoman Kurikulum Berbasis Cinta (KBC) - Ahli Kurikulum Madrasah.</p>
@@ -346,7 +368,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'referensi':
         return (
           <section key={id} id="section-11" className="mb-6">
-            {getSectionHeader(10, "REFERENSI")}
+            {getSectionHeader(getSectionLetterIndex(id), "REFERENSI")}
             <div className="pl-4 text-sm text-gray-700 dark:text-neutral-300">
               <p>Kegiatan ini merujuk pada praktik baik dari berbagai Madrasah Ibtidaiyah unggulan yang telah menerapkan integrasi nilai-nilai lokal dan spilliritual.</p>
             </div>
@@ -356,7 +378,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
       case 'jurnalRefleksi':
         return (
           <section key={id} id="section-12" className="mb-6 page-break-before">
-            {getSectionHeader(11, "JURNAL REFLEKSI GURU")}
+            {getSectionHeader(getSectionLetterIndex(id), "JURNAL REFLEKSI GURU")}
             <div className="pl-4">
               <table className="w-full border-2 border-black text-sm">
                 <thead>

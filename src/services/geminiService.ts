@@ -31,6 +31,11 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     - Semester: ${data.semester}
     - Alokasi Waktu: ${data.alokasi_jp} JP
     
+    Data Langkah Tahapan (Jika ada, narasikan lebih detail; Jika kosong, buatkan baru):
+    - Tahap 1 (Pengenalan): ${data.langkah_tahap_1 || 'Belum ada input'}
+    - Tahap 2 (Kontekstualisasi): ${data.langkah_tahap_2 || 'Belum ada input'}
+    - Tahap 3 (Aksi): ${data.langkah_tahap_3 || 'Belum ada input'}
+    
     Tugas Anda adalah menarasikan bagian-bagian berikut:
     1. refleksi_ai: Narasi refleksi akhir pekan melalui "Lingkaran Cerita" (contoh: perasaan saat merawat tanaman).
     2. lingkungan_belajar_ai: Deskripsi pemanfaatan lingkungan (madrasah, rumah, dll).
@@ -38,12 +43,15 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     4. kemitraan_keluarga_ai: Narasi peran orang tua/keluarga.
     5. digital_ai: Pemanfaatan teknologi digital (misal: dokumentasi foto, video tutorial).
     6. asesmen_ai: Narasi ringkas mengenai strategi asesmen yang digunakan. Fokus pada perpaduan asesmen formatif (observasi perilaku, jurnal refleksi) dan asesmen sumatif (produk akhir/unjuk kerja) yang otentik dan relevan dengan kegiatan.
-    7. rubrik_ai: Sebuah tabel rubrik penilaian yang sangat ringkas namun esensial dengan indikator DPL & KBC (Sangat Baik, Baik, Cukup, Perlu Bimbingan) dalam format Markdown.
-    8. kegiatan_18_pertemuan_ai: Rencana detail 18 pertemuan @ 3 JP.
+    7. rubrik_ai: Sebuah tabel rubrik penilaian yang komprehensif dengan kolom: "Aspek Penilaian", "Indikator Penilaian" (narasi spesifik indikator keberhasilan sesuai tema ${data.nama_kegiatan} dan dimensi ${data.dimensi}), "Sangat Baik", "Baik", "Cukup", "Perlu Bimbingan". Pastikan tabel dalam format Markdown. Indikator harus sangat relevan dengan tujuan: ${data.tujuan}.
+    8. langkah_tahap_1: Narasi detail untuk Tahap Pengenalan (Kesadaran & Eksplorasi Konsep).
+    9. langkah_tahap_2: Narasi detail untuk Tahap Kontekstualisasi (Masalah Lingkungan Terdekat).
+    10. langkah_tahap_3: Narasi detail untuk Tahap Aksi (Praktik Nyata).
+    11. kegiatan_18_pertemuan_ai: Rencana detail 18 pertemuan @ 3 JP.
        Tuntunan Alur (MANDATORY):
-       - Pertemuan 1-4: Tahap Pengenalan (Kesadaran & Eksplorasi Konsep).
-       - Pertemuan 5-8: Tahap Kontekstualisasi (Masalah Lingkungan Terdekat).
-       - Pertemuan 9-14: Tahap Aksi (Praktik Nyata sesuai "${data.bentuk_kegiatan}").
+       - Pertemuan 1-4: Tahap Pengenalan (Gunakan narasi dari langkah_tahap_1 sebagai dasar).
+       - Pertemuan 5-8: Tahap Kontekstualisasi (Gunakan narasi dari langkah_tahap_2 sebagai dasar).
+       - Pertemuan 9-14: Tahap Aksi (Gunakan narasi dari langkah_tahap_3 sebagai dasar).
        - Pertemuan 15-18: Tahap Refleksi & Tindak Lanjut (Evaluasi & Aksi Mandiri).
 
        Format Penulisan (WAJIB):
@@ -74,6 +82,9 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
           digital_ai: { type: Type.STRING },
           asesmen_ai: { type: Type.STRING },
           rubrik_ai: { type: Type.STRING },
+          langkah_tahap_1: { type: Type.STRING },
+          langkah_tahap_2: { type: Type.STRING },
+          langkah_tahap_3: { type: Type.STRING },
           kegiatan_18_pertemuan_ai: { type: Type.STRING },
           lkpd_ai: { type: Type.STRING },
         },
@@ -85,6 +96,9 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
           "digital_ai",
           "asesmen_ai",
           "rubrik_ai",
+          "langkah_tahap_1",
+          "langkah_tahap_2",
+          "langkah_tahap_3",
           "kegiatan_18_pertemuan_ai",
           "lkpd_ai"
         ],
@@ -103,6 +117,9 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     digital_ai: string;
     asesmen_ai: string;
     rubrik_ai: string;
+    langkah_tahap_1: string;
+    langkah_tahap_2: string;
+    langkah_tahap_3: string;
     kegiatan_18_pertemuan_ai: string;
     lkpd_ai: string;
   };
