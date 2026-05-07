@@ -26,7 +26,8 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
       });
     } catch (error) {
       console.error("AI Generation failed", error);
-      alert("Gagal membuat konten AI. Pastikan API Key sudah benar.");
+      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui";
+      alert(`Gagal membuat konten AI: ${errorMessage}\n\nPastikan API Key sudah benar di menu Settings.`);
     } finally {
       setLoading(false);
     }

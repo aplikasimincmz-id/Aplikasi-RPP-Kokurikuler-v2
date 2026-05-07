@@ -1,12 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ModuleData } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
-
 export async function generateModuleContent(data: Partial<ModuleData>) {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not set");
+  const apiKey = process.env.GEMINI_API_KEY;
+  
+  if (!apiKey || apiKey.trim() === "") {
+    throw new Error("API Key tidak ditemukan. Silakan masukkan GEMINI_API_KEY di menu Settings.");
   }
+
+  // Debugging (masked)
+  console.log(`Using API Key starting with: ${apiKey.substring(0, 4)}...`);
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
     Anda adalah ahli kurikulum madrasah dan pengembang Kurikulum Berbasis Cinta (KBC).
@@ -47,7 +52,7 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
   `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview", // Use Pro for complex long content
+    model: "gemini-3-flash-preview", // More stable and faster
     contents: prompt,
     config: {
       responseMimeType: "application/json",
