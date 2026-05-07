@@ -266,10 +266,38 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
         return (
           <section key={id} id="section-I" className="mb-6 page-break-before">
             {getSectionHeader(getSectionLetterIndex(id), "Kegiatan (18 Pertemuan)")}
-            <div className="pl-4 mt-2 text-sm">
-              <div className="markdown-content bg-gray-50 dark:bg-neutral-800/30 p-4 rounded border border-gray-100 dark:border-neutral-800">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {data.kegiatan_18_pertemuan_ai || "*Generate AI untuk melihat rencana detail 18 pertemuan.*"}
+            <div className="pl-0 mt-2 text-sm">
+              <div className="markdown-content">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h3: ({node, ...props}) => {
+                      const text = String(props.children);
+                      if (text.toLowerCase().includes('pertemuan')) {
+                        return (
+                          <div className="flex items-center gap-3 mt-6 mb-3 bg-primary-50 dark:bg-primary-900/20 p-2 rounded-lg border-l-4 border-primary-600">
+                             <div className="flex-1">
+                               <h3 className="text-primary-800 dark:text-primary-300 font-bold uppercase tracking-wider text-xs" {...props} />
+                             </div>
+                          </div>
+                        );
+                      }
+                      return <h3 className="font-bold mt-4 mb-2" {...props} />;
+                    },
+                    hr: () => <hr className="my-8 border-t-2 border-dashed border-gray-200 dark:border-neutral-800" />,
+                    ul: ({node, ...props}) => <ul className="list-disc pl-5 space-y-2 mb-4" {...props} />,
+                    li: ({node, ...props}) => <li className="text-gray-700 dark:text-gray-300 leading-relaxed" {...props} />
+                  }}
+                >
+                  {(() => {
+                    if (!data.kegiatan_18_pertemuan_ai) return "*Generate AI untuk melihat rencana detail 18 pertemuan.*";
+                    let count = 1;
+                    // Fix sequential numbering and add separators
+                    const fixedText = data.kegiatan_18_pertemuan_ai
+                      .replace(/### Pertemuan\s*\d+/gi, () => `### Pertemuan ${count++}`)
+                      .replace(/### Pertemuan/g, '---\n### Pertemuan');
+                    return fixedText;
+                  })()}
                 </ReactMarkdown>
               </div>
             </div>
