@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ModuleData } from '../types';
-import { generateModuleContent } from '../services/geminiService';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { generateModuleContent, generateTujuanAI } from '../services/geminiService';
+import { Sparkles, Loader2, CheckCircle2, Wand2 } from 'lucide-react';
 
 interface FormProps {
   data: ModuleData;
@@ -10,6 +10,7 @@ interface FormProps {
 
 export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
   const [loading, setLoading] = useState(false);
+  const [loadingTujuan, setLoadingTujuan] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -30,6 +31,28 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
       alert(`Gagal membuat konten AI: ${errorMessage}\n\nPastikan API Key sudah benar di menu Settings.`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateTujuan = async () => {
+    if (!data.nama_kegiatan || !data.fase_kelas) {
+      alert("Pastikan Tema Kegiatan dan Fase/Kelas sudah dipilih.");
+      return;
+    }
+
+    setLoadingTujuan(true);
+    try {
+      const generated = await generateTujuanAI(data);
+      onChange({
+        ...data,
+        tujuan: generated
+      });
+    } catch (error) {
+      console.error("AI Tujuan Generation failed", error);
+      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui";
+      alert(`Gagal membuat Tujuan AI: ${errorMessage}`);
+    } finally {
+      setLoadingTujuan(false);
     }
   };
 
@@ -63,7 +86,7 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
     { kelas: 6, semester: 'S2', dpl: 'Kemandirian', kbc: '5. Cinta Tanah Air', tema: 'Pesta Panen Perpisahan', jenis: 'Kolaboratif Berbasis Cinta (KKBC)', kegiatan: 'Mengelola bazar hasil karya sendiri sebagai bekal kemandirian', mapel: 'Akidah Akhlak, PJOK', jp: 48 },
   ];
 
-  const handleCheckboxChange = (name: 'dimensi' | 'topik', value: string) => {
+  const handleCheckboxChange = (name: 'dimensi' | 'topik' | 'mata_pelajaran_terkait', value: string) => {
     const currentValues = data[name] ? data[name]!.split(', ').filter(v => v !== '') : [];
     let newValues: string[];
     
@@ -93,6 +116,17 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
     "3. Cinta Lingkungan",
     "4. Cinta Diri dan Sesama Manusia",
     "5. Cinta Tanah Air"
+  ];
+
+  const mapelOptions = [
+    "Al Qur’an Hadis",
+    "Akidah Akhlak",
+    "Fikih",
+    "Pend. Pancasila",
+    "Bahasa Indonesia",
+    "IPAS",
+    "Seni Budaya",
+    "PJOK"
   ];
 
   return (
@@ -184,13 +218,42 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
             <option value="Mengelola bazar hasil karya sendiri sebagai bekal kemandirian">Mengelola bazar hasil karya sendiri sebagai bekal kemandirian</option>
           </select>
         </div>
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Mata Pelajaran Terkait</label>
-          <input 
-            name="mata_pelajaran_terkait" value={data.mata_pelajaran_terkait || ''} onChange={handleChange}
-            placeholder="Contoh: IPAS, Bahasa Indonesia, dll"
-            className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
-          />
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-xs font-bold text-gray-700 dark:text-neutral-300 uppercase flex items-center gap-2">
+            📚 Mata Pelajaran Terkait (Pilih satu atau lebih)
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-4 border border-gray-200 dark:border-neutral-700 rounded-xl bg-gray-50/50 dark:bg-neutral-800/50">
+            {mapelOptions.map(option => {
+              const isChecked = (data.mata_pelajaran_terkait || '').split(', ').includes(option);
+              return (
+                <label 
+                  key={option} 
+                  className={`flex items-center gap-3 p-2.5 rounded-lg border-2 cursor-pointer transition-all ${
+                    isChecked 
+                      ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-500 dark:border-primary-600 shadow-sm' 
+                      : 'bg-white dark:bg-neutral-800 border-transparent hover:border-gray-300 dark:hover:border-neutral-600'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${
+                    isChecked 
+                      ? 'bg-primary-600 border-primary-600 text-white' 
+                      : 'border-gray-300 dark:border-neutral-600 bg-transparent'
+                  }`}>
+                    {isChecked && <CheckCircle2 size={12} strokeWidth={3} />}
+                  </div>
+                  <input 
+                    type="checkbox"
+                    className="hidden"
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange('mata_pelajaran_terkait', option)}
+                  />
+                  <span className={`text-sm font-medium ${isChecked ? 'text-primary-900 dark:text-primary-100' : 'text-gray-600 dark:text-neutral-400'}`}>
+                    {option}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
         </div>
         <div className="space-y-1">
           <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Lokasi Kegiatan</label>
@@ -204,42 +267,94 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
 
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-2">
-          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase block">Dimensi Profil Lulusan (Boleh Pilih Lebih dari Satu)</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 border border-gray-200 dark:border-neutral-700 rounded-lg bg-gray-50 dark:bg-neutral-800">
-            {dimensiOptions.map(option => (
-              <label key={option} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary-700 dark:hover:text-primary-400 group">
-                <input 
-                  type="checkbox"
-                  checked={(data.dimensi || '').split(', ').includes(option)}
-                  onChange={() => handleCheckboxChange('dimensi', option)}
-                  className="rounded border-gray-300 dark:border-neutral-600 text-primary-600 focus:ring-primary-500 h-4 w-4"
-                />
-                <span className="group-hover:translate-x-1 transition-transform dark:text-neutral-300">{option}</span>
-              </label>
-            ))}
+          <label className="text-xs font-bold text-gray-700 dark:text-neutral-300 uppercase flex items-center gap-2">
+            🎯 Dimensi Profil Lulusan (Pilih satu atau lebih)
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-gray-200 dark:border-neutral-700 rounded-xl bg-gray-50/50 dark:bg-neutral-800/50">
+            {dimensiOptions.map(option => {
+              const isChecked = (data.dimensi || '').split(', ').includes(option);
+              return (
+                <label 
+                  key={option} 
+                  className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                    isChecked 
+                      ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-500 dark:border-primary-600 shadow-sm' 
+                      : 'bg-white dark:bg-neutral-800 border-transparent hover:border-gray-300 dark:hover:border-neutral-600'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 transition-colors ${
+                    isChecked 
+                      ? 'bg-primary-600 border-primary-600 text-white' 
+                      : 'border-gray-300 dark:border-neutral-600 bg-transparent'
+                  }`}>
+                    {isChecked && <CheckCircle2 size={12} strokeWidth={3} />}
+                  </div>
+                  <input 
+                    type="checkbox"
+                    className="hidden"
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange('dimensi', option)}
+                  />
+                  <span className={`text-sm font-semibold ${isChecked ? 'text-primary-900 dark:text-primary-100' : 'text-gray-600 dark:text-neutral-400'}`}>
+                    {option}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </div>
         
         <div className="space-y-2">
-          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase block">Topik Panca Cinta (Boleh Pilih Lebih dari Satu)</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 border border-gray-200 dark:border-neutral-700 rounded-lg bg-gray-50 dark:bg-neutral-800">
-            {topikOptions.map(option => (
-              <label key={option} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary-700 dark:hover:text-primary-400 group">
-                <input 
-                  type="checkbox"
-                  checked={(data.topik || '').split(', ').includes(option)}
-                  onChange={() => handleCheckboxChange('topik', option)}
-                  className="rounded border-gray-300 dark:border-neutral-600 text-primary-600 focus:ring-primary-500 h-4 w-4"
-                />
-                <span className="group-hover:translate-x-1 transition-transform dark:text-neutral-300">{option}</span>
-              </label>
-            ))}
+          <label className="text-xs font-bold text-gray-700 dark:text-neutral-300 uppercase flex items-center gap-2">
+            ❤️ Topik Panca Cinta (Pilih satu atau lebih)
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-gray-200 dark:border-neutral-700 rounded-xl bg-gray-50/50 dark:bg-neutral-800/50">
+            {topikOptions.map(option => {
+              const isChecked = (data.topik || '').split(', ').includes(option);
+              return (
+                <label 
+                  key={option} 
+                  className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                    isChecked 
+                      ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-500 dark:border-primary-600 shadow-sm' 
+                      : 'bg-white dark:bg-neutral-800 border-transparent hover:border-gray-300 dark:hover:border-neutral-600'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 transition-colors ${
+                    isChecked 
+                      ? 'bg-primary-600 border-primary-600 text-white' 
+                      : 'border-gray-300 dark:border-neutral-600 bg-transparent'
+                  }`}>
+                    {isChecked && <CheckCircle2 size={12} strokeWidth={3} />}
+                  </div>
+                  <input 
+                    type="checkbox"
+                    className="hidden"
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange('topik', option)}
+                  />
+                  <span className={`text-sm font-semibold ${isChecked ? 'text-primary-900 dark:text-primary-100' : 'text-gray-600 dark:text-neutral-400'}`}>
+                    {option}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </div>
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Tujuan Pembelajaran</label>
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-bold text-gray-600 dark:text-neutral-400 uppercase">Tujuan Pembelajaran</label>
+          <button
+            onClick={handleGenerateTujuan}
+            disabled={loadingTujuan}
+            className="flex items-center gap-1 text-[10px] font-bold text-purple-600 hover:text-purple-700 transition-colors disabled:opacity-50"
+          >
+            {loadingTujuan ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+            Generate AI
+          </button>
+        </div>
         <textarea 
           name="tujuan" value={data.tujuan || ''} onChange={handleChange}
           rows={2}

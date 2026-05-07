@@ -37,8 +37,8 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     3. kemitraan_satuan_ai: Narasi kolaborasi antar guru (misal: guru Mapel Terkait).
     4. kemitraan_keluarga_ai: Narasi peran orang tua/keluarga.
     5. digital_ai: Pemanfaatan teknologi digital (misal: dokumentasi foto, video tutorial).
-    6. asesmen_ai: Deskripsi instrumen asesmen (LKPD, Observasi mandiri).
-    7. rubrik_ai: Sebuah tabel rubrik penilaian dengan indikator DPL & KBC (Sangat Baik, Baik, Cukup, Kurang) dalam format Markdown.
+    6. asesmen_ai: Narasi ringkas mengenai strategi asesmen yang digunakan. Fokus pada perpaduan asesmen formatif (observasi perilaku, jurnal refleksi) dan asesmen sumatif (produk akhir/unjuk kerja) yang otentik dan relevan dengan kegiatan.
+    7. rubrik_ai: Sebuah tabel rubrik penilaian yang sangat ringkas namun esensial dengan indikator DPL & KBC (Sangat Baik, Baik, Cukup, Perlu Bimbingan) dalam format Markdown.
     8. kegiatan_18_pertemuan_ai: Rencana detail 18 pertemuan. Setiap pertemuan berdurasi 3 JP.
        Format per pertemuan harus sangat terstruktur dan menarasikan langkah operasional yang spesifik:
        • Pertemuan X - [Judul yang Menarik] (3 JP)
@@ -98,4 +98,39 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     kegiatan_18_pertemuan_ai: string;
     lkpd_ai: string;
   };
+}
+
+export async function generateTujuanAI(data: Partial<ModuleData>) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || apiKey.trim() === "") {
+    throw new Error("API Key tidak ditemukan. Silakan masukkan GEMINI_API_KEY di menu Settings.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+  const prompt = `
+    Anda adalah ahli kurikulum madrasah. Buatlah daftar bernomor "Tujuan Pembelajaran" untuk kegiatan Kokurikuler berikut:
+    - Tema/Nama Kegiatan: ${data.nama_kegiatan}
+    - Fase/Kelas: ${data.fase_kelas}
+    - Dimensi Profil Lulusan: ${data.dimensi}
+    - Topik Panca Cinta (KBC): ${data.topik}
+    - Bentuk Kegiatan: ${data.bentuk_kegiatan}
+
+    Ketentuan format (WAJIB):
+    1. Gunakan daftar bernomor (Contoh: 1. ..., 2. ..., 3. ...).
+    2. Maksimal 3-4 poin saja.
+    3. LANGSUNG berikan poin-poinya, TANPA kata pembuka, TANPA kata penutup, dan TANPA judul seperti "Tujuan Pembelajaran".
+    4. Setiap poin harus diawali dengan nomor dan kalimatnya harus dimulai dengan kata kerja operasional (Menumbuhkan, Menginternalisasi, dsb).
+    
+    Contoh Output:
+    1. Menumbuhkan rasa syukur melalui praktik nyata...
+    2. Menginternalisasi nilai Cinta Allah...
+    3. Berkolaborasi secara aktif...
+  `;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: prompt,
+  });
+
+  return response.text.trim();
 }
