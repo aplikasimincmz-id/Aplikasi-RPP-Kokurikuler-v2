@@ -42,7 +42,7 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
   };
 
   const kbcTopicDescriptions: Record<string, string> = {
-    "1. Cinta Allah Swt. and Rasul-Nya": "Menanamkan rasa syukur dan ketaatan kepada Sang Pencipta melalui kekaguman akan keteraturan alam semesta. Murid diajak mengenal sifat-sifat Allah melalui ciptaan-Nya, serta meneladani kemuliaan akhlak Rasulullah SAW dalam berinteraksi dengan sesama dan alam, menjadikan setiap aktivitas belajar sebagai bentuk ibadah.",
+    "1. Cinta Allah Swt. dan Rasul-Nya": "Menanamkan rasa syukur dan ketaatan kepada Sang Pencipta melalui kekaguman akan keteraturan alam semesta. Murid diajak mengenal sifat-sifat Allah melalui ciptaan-Nya, serta meneladani kemuliaan akhlak Rasulullah SAW dalam berinteraksi dengan sesama dan alam, menjadikan setiap aktivitas belajar sebagai bentuk ibadah.",
     "2. Cinta Ilmu": "Mendorong keingintahuan yang tinggi (curiosity) sebagai bekal pembelajar sepanjang hayat. Topik ini menekankan kegemaran membaca, semangat bereksperimen, dan ketekunan dalam menggali pengetahuan baru, meyakini bahwa menuntut ilmu adalah kewajiban yang meninggikan derajat manusia di hadapan Allah.",
     "3. Cinta Lingkungan": "Mengajak murid untuk memiliki kesadaran ekologis sebagai khalifah di bumi. Murid didorong untuk menyayangi alam sekitarnya, menjaga kebersihan, memelihara tanaman, menghemat energi, dan melestarikan makhluk hidup sebagai wujud cinta kepada Sang Pencipta yang telah memberikan alam sebagai amanah.",
     "4. Cinta Diri dan Sesama Manusia": "Membangun harga diri yang positif dan kesehatan jiwa raga. Murid diajarkan untuk menghargai potensi diri, menjaga kesehatan fisik, serta memupuk empati, kasih sayang, dan sikap toleran terhadap perbedaan. Fokusnya adalah menciptakan harmoni sosial melalui tutur kata yang santun dan tindakan saling menolong.",
@@ -55,17 +55,35 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
   
   const getIntegrationNarrative = () => {
     if (data.materi_integrasi) return data.materi_integrasi;
-    if (selectedItems.length === 0) return `Kegiatan ini mengintegrasikan penguatan iman melalui rasa syukur atas ciptaan Allah, kepedulian terhadap lingkungan sekitar, dan pencapaian TP: ${data.tujuan}.`;
     
-    const kbcPart = selectedKBC.length > 0 
-      ? `penginternalisasian nilai ${selectedKBC.map(t => t.includes('. ') ? t.split('. ')[1] : t).join(", ")} (${selectedKBC.map(t => rubricContent[t]?.aspect).join(", ")})`
-      : "";
+    if (selectedKBC.length === 0) {
+      return `Kegiatan "${data.nama_kegiatan || '-'}" ini mengintegrasikan penguatan karakter berbasis adab dan kasih sayang (KBC). Murid diajak untuk menumbuhkan rasa syukur serta kepedulian terhadap sekitar, selaras dengan pencapaian tujuan pembelajaran: ${data.tujuan}. Setiap tahapan aktivitas menjamin aspek spiritual dan sosial berjalan beriringan dengan materi akademik.`;
+    }
+
+    const kbcNarratives = selectedKBC.map(topic => {
+      const title = topic.includes('. ') ? topic.split('. ')[1] : topic;
+      const baseDesc = kbcTopicDescriptions[topic] || "";
+      
+      const specificNarrative = topic.includes('Allah') 
+        ? "Melalui proyek ini, murid dibimbing untuk mengagumi kebesaran Allah melalui obyek yang dipelajari, memperkuat pondasi tauhid dalam bingkai sains dan aktivitas praktis."
+        : topic.includes('Ilmu')
+        ? "Proyek ini memicu semangat 'Cinta Ilmu' dengan memberikan ruang bagi murid untuk bertanya, bereksperimen, dan menemukan solusi secara kreatif terhadap tantangan yang ada."
+        : topic.includes('Lingkungan')
+        ? "Nilai 'Cinta Lingkungan' diimplementasikan secara langsung melalui aksi nyata pelestarian, menanamkan kesadaran bahwa menjaga bumi adalah bagian dari tanggung jawab iman."
+        : topic.includes('Sesama')
+        ? "Interaksi selama proyek mendorong tumbuhnya empati dan kasih sayang antar teman, di mana murid belajar berbagi peran dan saling menghargai kelebihan satu sama lain."
+        : "Semangat patriotisme ditanamkan dengan cara menjaga harmoni lingkungan madrasah dan menghargai kearifan lokal yang menjadi kekayaan bangsa.";
+
+      return `### ${title}\n${baseDesc}\n\n*${specificNarrative}*`;
+    }).join('\n\n');
+
+    const intro = `Proyek **"${data.nama_kegiatan}"** ini secara eksplisit menginternalisasikan nilai-nilai **Kurikulum Berbasis Cinta (KBC)** sebagai ruh utama dalam setiap tahapannya:`;
     
     const dplPart = selectedDimensions.length > 0
-      ? `penguatan dimensi ${selectedDimensions.join(", ")} yang menitikberatkan pada aspek ${selectedDimensions.map(d => rubricContent[d]?.aspect).join(" serta ")}`
+      ? `\n\nSelain itu, kegiatan ini turut diperkuat melalui integrasi Dimensi Profil Lulusan (**${selectedDimensions.join(", ")}**) yang menitikberatkan pada aspek ${selectedDimensions.map(d => rubricContent[d]?.aspect).join(" serta ")}.`
       : "";
-      
-    return `Materi ini disusun dengan mengintegrasikan ${kbcPart}${kbcPart && dplPart ? " serta " : ""}${dplPart}. Pendekatan Kurikulum Berbasis Cinta (KBC) ini memastikan bahwa setiap aktivitas dalam proyek "${data.nama_kegiatan}" tidak hanya memenuhi capaian kognitif, tetapi juga membentuk karakter murid yang beradab dan penuh kasih sayang sesuai target: ${data.tujuan}.`;
+
+    return `${intro}\n\n${kbcNarratives}${dplPart}\n\nIntegrasi ini memastikan pencapaian target pembelajaran (**${data.tujuan}**) tidak hanya menyentuh aspek kognitif, tetapi juga transformasi karakter yang beradab.`;
   };
 
   const getLearningObjectives = () => {
@@ -169,8 +187,12 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
         return (
           <section key={id} id="section-B" className="mb-4">
             {getSectionHeader(getSectionLetterIndex(id), "Kurikulum Berbasis Cinta (KBC)")}
-            <div className="pl-4 text-sm italic text-primary-800 dark:text-primary-400">
-              {data.topik || "-"}
+            <div className="pl-4 text-sm text-gray-700 dark:text-gray-300">
+              <div className="markdown-content text-justify">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {integrationText}
+                </ReactMarkdown>
+              </div>
             </div>
           </section>
         );
