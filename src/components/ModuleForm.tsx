@@ -400,7 +400,7 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
           <textarea 
             name="langkah_tahap_3" value={data.langkah_tahap_3 || ''} onChange={handleChange}
             rows={3}
-            placeholder="Praktik nyata, pembuatan produk..."
+            placeholder="Aksi nyata, pembuatan produk konkret, dan hubungannya dengan tujuan pembelajaran..."
             className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
           />
         </div>
@@ -449,7 +449,14 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
           </div>
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-500 dark:text-neutral-500 uppercase">Lampiran LKPD AI</label>
-            <textarea name="lkpd_ai" value={data.lkpd_ai || ''} onChange={handleChange} rows={6} className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm font-mono" />
+            <textarea 
+              name="lkpd_ai" 
+              value={data.lkpd_ai || ''} 
+              onChange={handleChange} 
+              rows={6} 
+              placeholder="Contoh LKPD interaktif (observasi, jurnal, wawancara) dengan instruksi jelas untuk siswa..."
+              className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm font-mono shadow-inner outline-none focus:ring-1 focus:ring-primary-500" 
+            />
           </div>
         </div>
       )}

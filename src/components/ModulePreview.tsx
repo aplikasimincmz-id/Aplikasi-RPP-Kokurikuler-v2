@@ -19,9 +19,10 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
   };
 
   const totalJP = parseInt(data.alokasi_jp || '0', 10);
-  const jp1 = Math.floor(totalJP * 0.3);
-  const jp2 = Math.floor(totalJP * 0.5);
-  const jp3 = totalJP - jp1 - jp2;
+  const jpPengenalan = Math.round(totalJP * 0.3);
+  const jpKontekstualisasi = Math.round(totalJP * 0.5);
+  const jpAksi = Math.round(totalJP * 0.15);
+  const jpRefleksi = totalJP - jpPengenalan - jpKontekstualisasi - jpAksi;
 
   const rubricContent: Record<string, { aspect: string; prompt: string }> = {
     // Dimensi
@@ -288,6 +289,36 @@ export const ModulePreview: React.FC<PreviewProps> = ({ data, onEdit, pdfSection
         return (
           <section key={id} id="section-I" className="mb-6 page-break-before">
             {getSectionHeader(getSectionLetterIndex(id), "Kegiatan (18 Pertemuan)")}
+            
+            <div className="mb-8 px-5 py-4 bg-primary-50/50 dark:bg-neutral-800/40 rounded-xl border border-primary-200 dark:border-neutral-700 shadow-sm print:bg-gray-50 print:border-gray-300">
+               <div className="flex items-center gap-2 mb-4">
+                 <div className="w-2 h-6 bg-primary-600 rounded-full" />
+                 <h4 className="text-xs font-bold uppercase tracking-widest text-primary-900 dark:text-primary-300">Target Alokasi Waktu (Total: {totalJP} JP)</h4>
+               </div>
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="flex flex-col items-center justify-center p-3 bg-white dark:bg-neutral-800 rounded-lg border border-primary-100 dark:border-neutral-700 shadow-sm transition-transform hover:scale-[1.02] cursor-default">
+                    <span className="text-[9px] text-gray-500 dark:text-neutral-400 uppercase font-bold mb-1 tracking-tight">1. Pengenalan</span>
+                    <span className="text-xs text-primary-700/70 dark:text-primary-500 font-medium mb-1">30%</span>
+                    <span className="text-xl font-black text-primary-600 dark:text-primary-400">{jpPengenalan} JP</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-3 bg-white dark:bg-neutral-800 rounded-lg border border-primary-100 dark:border-neutral-700 shadow-sm transition-transform hover:scale-[1.02] cursor-default">
+                    <span className="text-[9px] text-gray-500 dark:text-neutral-400 uppercase font-bold mb-1 tracking-tight">2. Kontekstual</span>
+                    <span className="text-xs text-primary-700/70 dark:text-primary-500 font-medium mb-1">50%</span>
+                    <span className="text-xl font-black text-primary-600 dark:text-primary-400">{jpKontekstualisasi} JP</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-3 bg-white dark:bg-neutral-800 rounded-lg border border-primary-100 dark:border-neutral-700 shadow-sm transition-transform hover:scale-[1.02] cursor-default">
+                    <span className="text-[9px] text-gray-500 dark:text-neutral-400 uppercase font-bold mb-1 tracking-tight">3. Aksi Nyata</span>
+                    <span className="text-xs text-primary-700/70 dark:text-primary-500 font-medium mb-1">15%</span>
+                    <span className="text-xl font-black text-primary-600 dark:text-primary-400">{jpAksi} JP</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-3 bg-white dark:bg-neutral-800 rounded-lg border border-primary-100 dark:border-neutral-700 shadow-sm transition-transform hover:scale-[1.02] cursor-default">
+                    <span className="text-[9px] text-gray-500 dark:text-neutral-400 uppercase font-bold mb-1 tracking-tight">4. Refleksi</span>
+                    <span className="text-xs text-primary-700/70 dark:text-primary-500 font-medium mb-1">5%</span>
+                    <span className="text-xl font-black text-primary-600 dark:text-primary-400">{jpRefleksi} JP</span>
+                  </div>
+               </div>
+            </div>
+
             <div className="pl-0 mt-2 text-sm">
               <div className="markdown-content">
                 <ReactMarkdown 

@@ -46,7 +46,7 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     7. rubrik_ai: Sebuah tabel rubrik penilaian yang komprehensif dengan kolom: "Aspek Penilaian", "Indikator Penilaian" (narasi spesifik indikator keberhasilan sesuai tema ${data.nama_kegiatan} dan dimensi ${data.dimensi}), "Sangat Baik", "Baik", "Cukup", "Perlu Bimbingan". Pastikan tabel dalam format Markdown. Indikator harus sangat relevan dengan tujuan: ${data.tujuan}.
     8. langkah_tahap_1: Narasi detail untuk Tahap Pengenalan (Kesadaran & Eksplorasi Konsep).
     9. langkah_tahap_2: Narasi detail untuk Tahap Kontekstualisasi. Fokuskan pada identifikasi masalah nyata/isu lingkungan di madrasah dan sekitarnya (seperti sampah, penghijauan, atau air), serta buatkan contoh konkret kolaborasi dengan komunitas lokal atau pakar di lingkungan terdekat.
-    10. langkah_tahap_3: Narasi detail untuk Tahap Aksi (Praktik Nyata).
+    10. langkah_tahap_3: Narasi detail untuk Tahap Aksi (Praktik Nyata). Fokuskan pada implementasi aksi nyata atau proses pembuatan produk konkret dalam konteks kokurikuler, serta narasikan bagaimana aksi/produk tersebut secara eksplisit mencapai tujuan pembelajaran: ${data.tujuan}.
     11. kegiatan_18_pertemuan_ai: Rencana detail 18 pertemuan @ 3 JP.
        Tuntunan Alur (MANDATORY):
        - Pertemuan 1-4: Tahap Pengenalan (Gunakan narasi dari langkah_tahap_1 sebagai dasar).
@@ -62,7 +62,7 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
          2. **Inti**: Uraian kegiatan inti pembelajaran yang jelas dan sistematis (aktivitas konkret PjBL/metode aktif lainnya).
          3. **Penutup**: Uraian kegiatan akhir pembelajaran pada pertemuan tersebut (refleksi karakter & penguatan adab).
        - Berikan narasi yang sangat operasional dan detail (apa yang dilakukan guru dan murid).
-    9. lkpd_ai: Contoh Lembar Kerja Peserta Didik (LKPD) yang menarik dan relevan untuk semua pertemuan (atau perwakilan pertemuan utama) dalam format Markdown.
+    12. lkpd_ai: Contoh Lembar Kerja Peserta Didik (LKPD) yang interaktif dan bervariasi (misal: lembar observasi, jurnal kreatif, panduan wawancara, atau mind mapping) dalam format Markdown. Sertakan instruksi langkah-demi-langkah yang jelas dan ramah anak untuk setiap tugas di dalam LKPD.
 
     Gunakan bahasa yang edukatif, Islami (Panca Cinta), dan sesuai dengan psikologi anak ${data.fase_kelas}.
   `;
