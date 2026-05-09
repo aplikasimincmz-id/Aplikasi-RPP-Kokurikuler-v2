@@ -391,7 +391,7 @@ export const ModuleForm: React.FC<FormProps> = ({ data, onChange }) => {
           <textarea 
             name="langkah_tahap_2" value={data.langkah_tahap_2 || ''} onChange={handleChange}
             rows={3}
-            placeholder="Menghubungkan dengan lingkungan..."
+            placeholder="Isu lingkungan madrasah (sampah/air/hijau) & kolaborasi komunitas lokal..."
             className="w-full p-2 border border-gray-300 dark:border-neutral-700 rounded dark:bg-neutral-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
           />
         </div>

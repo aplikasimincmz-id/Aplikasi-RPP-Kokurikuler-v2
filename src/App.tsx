@@ -576,7 +576,7 @@ export default function App() {
         <div className="mb-8">
           <div className="mb-6 flex justify-center">
             <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Kementerian_Agama_new_logo.png" 
+              src="https://freeimghost.com/images/2026/05/08/logo-kemenag60fceb73d13a9d39.png" 
               alt="Logo Kementerian Agama" 
               className="h-24 w-auto object-contain drop-shadow-md brightness-110"
               referrerPolicy="no-referrer"

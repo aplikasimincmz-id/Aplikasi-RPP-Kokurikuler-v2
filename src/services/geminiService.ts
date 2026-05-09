@@ -45,7 +45,7 @@ export async function generateModuleContent(data: Partial<ModuleData>) {
     6. asesmen_ai: Narasi ringkas mengenai strategi asesmen yang digunakan. Fokus pada perpaduan asesmen formatif (observasi perilaku, jurnal refleksi) dan asesmen sumatif (produk akhir/unjuk kerja) yang otentik dan relevan dengan kegiatan.
     7. rubrik_ai: Sebuah tabel rubrik penilaian yang komprehensif dengan kolom: "Aspek Penilaian", "Indikator Penilaian" (narasi spesifik indikator keberhasilan sesuai tema ${data.nama_kegiatan} dan dimensi ${data.dimensi}), "Sangat Baik", "Baik", "Cukup", "Perlu Bimbingan". Pastikan tabel dalam format Markdown. Indikator harus sangat relevan dengan tujuan: ${data.tujuan}.
     8. langkah_tahap_1: Narasi detail untuk Tahap Pengenalan (Kesadaran & Eksplorasi Konsep).
-    9. langkah_tahap_2: Narasi detail untuk Tahap Kontekstualisasi (Masalah Lingkungan Terdekat).
+    9. langkah_tahap_2: Narasi detail untuk Tahap Kontekstualisasi. Fokuskan pada identifikasi masalah nyata/isu lingkungan di madrasah dan sekitarnya (seperti sampah, penghijauan, atau air), serta buatkan contoh konkret kolaborasi dengan komunitas lokal atau pakar di lingkungan terdekat.
     10. langkah_tahap_3: Narasi detail untuk Tahap Aksi (Praktik Nyata).
     11. kegiatan_18_pertemuan_ai: Rencana detail 18 pertemuan @ 3 JP.
        Tuntunan Alur (MANDATORY):

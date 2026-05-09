@@ -51,7 +51,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Kementerian_Agama_new_logo.png" 
+            src="https://freeimghost.com/images/2026/05/08/logo-kemenag60fceb73d13a9d39.png" 
             alt="Logo Kemenag" 
             className="w-24 h-24 mx-auto mb-6 drop-shadow-lg relative z-10"
           />
